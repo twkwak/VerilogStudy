@@ -9,4 +9,4 @@
 - [module_shift](module_shift/) -module_shift 논리 회로 구현
     - [module_shift.v](module_shift/module_shift.v)
     - [testbench](module_shift/tb_module_shift.v)
-    - [Waveform](module_shift/
+    - [Waveform](module_shift/wf_module_shift.png)

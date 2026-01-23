@@ -1,3 +1,13 @@
+Vivado Behavioral Simulation (XSim)
+
+ALL TESTS PASSED
+
+- Reset behavior verified
+- Write/Read functionality verified
+- Invalid address access correctly blocked
+
+Simulator: Vivado 2023.2
+
 Time resolution is 1 ps
 ALL TESTS PASSED
 $finish called at time : 235 ns : File "C:/Users/Tae won/Documents/reg_file/reg_file.srcs/sim_1/new/tb_reg_file.sv" Line 67

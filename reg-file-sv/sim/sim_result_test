@@ -1,1 +1,3 @@
-
+Time resolution is 1 ps
+ALL TESTS PASSED
+$finish called at time : 235 ns : File "C:/Users/Tae won/Documents/reg_file/reg_file.srcs/sim_1/new/tb_reg_file.sv" Line 67

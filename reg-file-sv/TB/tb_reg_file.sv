@@ -31,7 +31,7 @@ module tb_reg_file;
         re   <= 1; we <= 0;
         addr <= a;
         @(posedge clk); // rdata is combinational, but sample on clock edge for TB stability
-        assert (rdata === exp)  //rdata¿Í exp °ªÀÌ °°Áö ¾Ê´Ù¸é ¿¡·¯ ¹ß»ı
+        assert (rdata === exp)  //rdataì™€ exp ê°’ì´ ê°™ì§€ ì•Šë‹¤ë©´ ì—ëŸ¬ ë°œìƒ
         else $fatal("READ MISMATCH addr=%h exp=%h got=%h", a, exp, rdata);
         re <= 0;
     endtask
@@ -45,23 +45,23 @@ module tb_reg_file;
         repeat (2) @(posedge clk);
         rst_n <= 1;
 
-        // reset ÈÄ °ª È®ÀÎ
+        // reset í›„ ê°’ í™•ì¸
         do_read_check(8'h00, 32'h0);    
         do_read_check(8'h04, 32'h0);    
         do_read_check(8'h08, 32'h0);    
         do_read_check(8'h0C, 32'h0);    
 
-        // write ¡æ read ¡æ assert
+        // write â†’ read â†’ assert
         do_write(8'h00, 32'hDEADBEEF);  //addr=8'h00, wdata=32'hDEADBEEF
         do_read_check(8'h00, 32'hDEADBEEF); // rdata==32'hDEADBEEF?
 
         do_write(8'h0C, 32'h12345678);
         do_read_check(8'h0C, 32'h12345678);
 
-        // Àß¸øµÈ ÁÖ¼Ò Á¢±Ù Å×½ºÆ® (0x10Àº invalid)
+        // ì˜ëª»ëœ ì£¼ì†Œ ì ‘ê·¼ í…ŒìŠ¤íŠ¸ (0x10ì€ invalid)
         do_write(8'h10, 32'hAAAAAAAA);       // should be ignored
         do_read_check(8'h10, 32'h0);         // policy: invalid -> 0
-        do_read_check(8'h00, 32'hDEADBEEF);  // reg0 À¯Áö È®ÀÎ
+        do_read_check(8'h00, 32'hDEADBEEF);  // reg0 ìœ ì§€ í™•ì¸
 
         $display("ALL TESTS PASSED");
         $finish;

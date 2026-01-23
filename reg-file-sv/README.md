@@ -26,7 +26,7 @@ AXI-Lite Slave 설계를 진행하기 전에, 주소 디코드와 레지스터 w
 ---
 
 ## 설계 메모
-- 주소는 레지스터 번호가 아니라 **byte address** 기준으로 처리
+- 주소는 레지스터 번호가 아니라 byte address 기준으로 처리
 - `addr[3:2]`를 이용해 레지스터 인덱스를 계산
 - `addr_valid` 신호로 잘못된 주소 접근을 차단
 - reset은 항상 최우선으로 동작하도록 구성
@@ -48,10 +48,4 @@ assert를 사용해 파형을 직접 보지 않아도 PASS/FAIL을 확인할 수
 ## 시뮬레이션
 - Vivado XSim (Behavioral Simulation)
 - 모든 테스트 시나리오 PASS  
-- 파형과 간단한 결과 요약은 `sim/` 디렉토리에 정리했습니다.
 
----
-
-## 다음 계획
-이 Register File을 기반으로 ready/valid handshaking을 먼저 연습한 뒤,  
-AXI-Lite Slave 인터페이스로 확장할 예정입니다.

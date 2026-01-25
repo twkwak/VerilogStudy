@@ -72,22 +72,22 @@ module tb_rv_fifo_1deep;
   endtask
 
   // -----------------------
-  // Assertions (ÇÊ¼ö 2°³)
+  // Assertions (í•„ìˆ˜ 2ê°œ)
   // -----------------------
-  // stall µ¿¾È out_data °íÁ¤ (´ÙÀ½ »çÀÌÅ¬ ±âÁØÀ¸·Î Ã¼Å©)
-  assert property (@(posedge clk) disable iff (!rst_n)                  //assert Á¤ÀÇ¿Í µ¿½Ã¿¡ ½ÇÇà , ¸®¼ÂÁßÀÌ¸é ¼öÇà x
-    (out_valid && !out_ready) |=> (out_data == $past(out_data))     //need to hold data when out_valid= 1 && out_ready = 0 , |=> ´ÙÀ½Å¬·°ºÎÅÍ º¯È­
+  // stall ë™ì•ˆ out_data ê³ ì • (ë‹¤ìŒ ì‚¬ì´í´ ê¸°ì¤€ìœ¼ë¡œ ì²´í¬)
+  assert property (@(posedge clk) disable iff (!rst_n)                  //assert ì •ì˜ì™€ ë™ì‹œì— ì‹¤í–‰ , ë¦¬ì…‹ì¤‘ì´ë©´ ìˆ˜í–‰ x
+    (out_valid && !out_ready) |=> (out_data == $past(out_data))     //need to hold data when out_valid= 1 && out_ready = 0 , |=> ë‹¤ìŒí´ëŸ­ë¶€í„° ë³€í™”
   ) else $fatal(1, "out_data changed while stalled");
 
 
-  // out_valid´Â accept(pop)µÉ ¶§±îÁö À¯Áö
+  // out_validëŠ” accept(pop)ë  ë•Œê¹Œì§€ ìœ ì§€
   assert property (@(posedge clk) disable iff (!rst_n)
     (out_valid && !out_ready) |=> out_valid                         //out_valid must be 1 at next cycle
   ) else $fatal(1, "out_valid dropped before acceptance");
 
   // -----------------------
-  // À¯ÀÏÇÑ µå¶óÀÌ¹ö: negedge¿¡¼­¸¸ stimulus ±¸µ¿
-  // (¸ÖÆ¼µå¶óÀÌºê ¹æÁö)
+  // ìœ ì¼í•œ ë“œë¼ì´ë²„: negedgeì—ì„œë§Œ stimulus êµ¬ë™
+  // (ë©€í‹°ë“œë¼ì´ë¸Œ ë°©ì§€)
   // -----------------------
   always @(negedge clk) begin
     if (!rst_n) begin
@@ -95,20 +95,20 @@ module tb_rv_fifo_1deep;
       in_valid  <= 1'b0;
       in_data   <= '0;
     end 
-    else if (run_random)                    //random value »ı¼º ¹× push ¹ß»ı ½Ã data update
+    else if (run_random)                    //random value ìƒì„± ë° push ë°œìƒ ì‹œ data update
     begin
       // random backpressure
       out_ready <= $urandom_range(0,1);
 
-      // random valid (70% È®·ü)
+      // random valid (70% í™•ë¥ )
       in_valid  <= ($urandom_range(0,99) < 70);
 
-      // sender rule: pushÀÏ ¶§¸¸ data °»½Å
+      // sender rule: pushì¼ ë•Œë§Œ data ê°±ì‹ 
     if (in_valid && in_ready) 
       begin       //push!
         in_data <= next_payload[DW-1:0];    //   data update at negedge && push
       end
-      // else: in_data À¯Áö (stall µ¿¾È data stable)
+      // else: in_data ìœ ì§€ (stall ë™ì•ˆ data stable)
     end 
     
     else // 300 cycle end , run_random = 0 
@@ -116,26 +116,26 @@ module tb_rv_fifo_1deep;
       // drain mode
       out_ready <= 1'b1;
       in_valid  <= 1'b0;
-      // in_data´Â ÀÇ¹Ì ¾øÀ½(À¯È¿ ¾Æ´Ô) -> ±×´ë·Î µÖµµ µÊ
+      // in_dataëŠ” ì˜ë¯¸ ì—†ìŒ(ìœ íš¨ ì•„ë‹˜) -> ê·¸ëŒ€ë¡œ ë‘¬ë„ ë¨
     end
   end
 
   // -----------------------
-  // Reference model + checking (posedge¿¡¼­)
+  // Reference model + checking (posedgeì—ì„œ)
   // -----------------------
   always_ff @(posedge clk or negedge rst_n) begin
     if (!rst_n) begin
       ref_full <= 1'b0;
       ref_data <= '0;
     end else begin
-      // pop ¹ß»ı ½Ã µ¥ÀÌÅÍ Ã¼Å© pop = out_valid= 1 , out_ready= 1, full= 1ÀÏ¶§ ¹ß»ı
+      // pop ë°œìƒ ì‹œ ë°ì´í„° ì²´í¬ pop = out_valid= 1 , out_ready= 1, full= 1ì¼ë•Œ ë°œìƒ
       if (pop) 
       begin
-        if (!ref_full) $fatal(1, "REF underflow: pop but ref_full=0");              // pop¿¡¼­ full=0 Àº ¿À·ù
+        if (!ref_full) $fatal(1, "REF underflow: pop but ref_full=0");              // popì—ì„œ full=0 ì€ ì˜¤ë¥˜
         if (out_data !== ref_data) $fatal(1, "DATA mismatch: exp=0x%08h got=0x%08h", ref_data, out_data);       
       end
 
-      // ref »óÅÂ ¾÷µ¥ÀÌÆ®
+      // ref ìƒíƒœ ì—…ë°ì´íŠ¸
       unique case ({push, pop})
         2'b10: begin // push only
           if (ref_full) $fatal(1, "REF overflow: push but ref_full=1");
@@ -172,7 +172,7 @@ module tb_rv_fifo_1deep;
     run_random = 1'b0;
     repeat (20) @(posedge clk);
 
-    // drain È®ÀÎ: DUT¿Í REF µÑ ´Ù ºñ¾î¾ß ÇÔ
+    // drain í™•ì¸: DUTì™€ REF ë‘˜ ë‹¤ ë¹„ì–´ì•¼ í•¨
     if (out_valid) $fatal(1, "Drain failed: DUT still valid");
     if (ref_full)  $fatal(1, "Drain failed: ref_full still 1");
 

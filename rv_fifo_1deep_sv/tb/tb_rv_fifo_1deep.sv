@@ -176,7 +176,7 @@ module tb_rv_fifo_1deep;
     if (out_valid) $fatal(1, "Drain failed: DUT still valid");
     if (ref_full)  $fatal(1, "Drain failed: ref_full still 1");
 
-    $display("PASS ? Project 1 TB complete");
+    $display("PASS Project 1 TB complete");
     $finish;
   end
 

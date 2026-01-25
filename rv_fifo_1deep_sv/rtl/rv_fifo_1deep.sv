@@ -10,13 +10,13 @@ module rv_fifo_1deep
   input  logic           rst_n,
 //data sender => valid , data receiver => ready 
   // input side
-  input  logic           in_valid,  //µ¥ÀÌÅÍ ÁÖ´Â valid
-  output logic           in_ready,  //µ¥ÀÌÅÍ ¹Ş´Â ready, ready=1 => fifo°¡ ¹ŞÀ» ÁØºñ ¿Ï·á.
+  input  logic           in_valid,  //ë°ì´í„° ì£¼ëŠ” valid
+  output logic           in_ready,  //ë°ì´í„° ë°›ëŠ” ready, ready=1 => fifoê°€ ë°›ì„ ì¤€ë¹„ ì™„ë£Œ.
   input  logic [DW-1:0]  in_data,
 
   // output side
-  output logic           out_valid, //valid=1 => fifo°¡ µ¥ÀÌÅÍ Àü¼Û °¡´É
-  input  logic           out_ready, //ready=1 =>consumerÀÌ ¹ŞÀ» ÁØºñ ¿Ï·á
+  output logic           out_valid, //valid=1 => fifoê°€ ë°ì´í„° ì „ì†¡ ê°€ëŠ¥
+  input  logic           out_ready, //ready=1 =>consumerì´ ë°›ì„ ì¤€ë¹„ ì™„ë£Œ
   output logic [DW-1:0]  out_data
 );
 
@@ -24,8 +24,8 @@ module rv_fifo_1deep
   logic [DW-1:0] storage;
 
   // combinational contracts
-  assign in_ready  = ~full; //in_ready=1 => full=0 ºñ¾îÀÖÀ¸´Ï ¹ŞÀ» ¼ö ÀÖÀ½ 
-  assign out_valid =  full; //out_valid=1 => full=1 Ã¤¿öÁ®ÀÖÀ¸´Ï valid 1 , full=0ÀÌ¸é out_valid 0, pop x
+  assign in_ready  = ~full; //in_ready=1 => full=0 ë¹„ì–´ìˆìœ¼ë‹ˆ ë°›ì„ ìˆ˜ ìˆìŒ 
+  assign out_valid =  full; //out_valid=1 => full=1 ì±„ì›Œì ¸ìˆìœ¼ë‹ˆ valid 1 , full=0ì´ë©´ out_valid 0, pop x
   assign out_data  =  storage;
 
   // handshake events
@@ -46,8 +46,8 @@ module rv_fifo_1deep
           full    <= 1'b1;
         end
         2'b01: begin // pop only
-          full    <= 1'b0;          //full=0ÀÌ¸é out_data´Â ÀÇ¹Ì ¾øÀ½
-        end                         //storage °ªÀº ³²À½,  out_valid=0ÀÌ¹Ç·Î Ãâ·Â µ¥ÀÌÅÍ´Â ¹«È¿
+          full    <= 1'b0;          //full=0ì´ë©´ out_dataëŠ” ì˜ë¯¸ ì—†ìŒ
+        end                         //storage ê°’ì€ ë‚¨ìŒ,  out_valid=0ì´ë¯€ë¡œ ì¶œë ¥ ë°ì´í„°ëŠ” ë¬´íš¨
         2'b11: begin // push & pop simultaneously
           storage <= in_data; // replace with new data
           full    <= 1'b1;

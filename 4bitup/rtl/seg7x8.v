@@ -42,7 +42,7 @@ module seg7x8(
             6 : o_dig_r = 8'b0100_0000;
             7 : o_dig_r = 8'b1000_0000;
          endcase
-	reg turn_off_r;       // ?  segment   —©                        
+	reg turn_off_r;       // ?  segment   â€”Â©                        
 	always
   	    case (seg7_addr)
                 0 : turn_off_r = i_turn_off[0];
@@ -95,7 +95,7 @@ reg [7:0] o_seg_r;
  
 	always @ (posedge clk_50m, negedge reset_n)
   	    if (!reset_n)   o_seg_r <= 8'hFF;                 
-	    else if (turn_off_r)  o_seg_r <= 8'hFF; //  ©ö 
+	    else if (turn_off_r)  o_seg_r <= 8'hFF; //  Â©Ã¶ 
    	    else if (!dp_r)   // ?  seg   DP?          
                case (seg_data_r)              
           	4'h0 : o_seg_r <= 8'hC0;

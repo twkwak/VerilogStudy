@@ -1,5 +1,5 @@
 `timescale 1ns / 1ps
-module tb_4reg;
+module tb_reg4;
     reg [3:0] data_in;
     reg inen;
     reg oen;
@@ -24,12 +24,10 @@ module tb_4reg;
         clk=0;
         data_in=4'b0101;
         #100; clr=0;
-        #200; inen=1; oen=1;
-        #300; data_in=4'b1101;
+        #100; inen=1; oen=1;
+        #200; data_in=4'b1101;
         #200; inen=1; oen=1;
         #200; clr=1;
-        #300; clr=0;
-        #100; data_in=4'ha;
         #100;
         
     end

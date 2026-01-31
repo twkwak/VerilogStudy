@@ -18,7 +18,7 @@ set_property -dict { PACKAGE_PIN P14   IOSTANDARD LVCMOS33 } [get_ports { dig[4]
 set_property -dict { PACKAGE_PIN T14   IOSTANDARD LVCMOS33 } [get_ports { dig[5] }]; #IO_L14P_T2_SRCC_14 Sch=an[5]
 set_property -dict { PACKAGE_PIN K2    IOSTANDARD LVCMOS33 } [get_ports { dig[6] }]; #IO_L23P_T3_35 Sch=an[6]
 set_property -dict { PACKAGE_PIN U13   IOSTANDARD LVCMOS33 } [get_ports { dig[7] }]; #IO_L23N_T3_A02_D18_14 Sch=an[7]
-##Pmod Header JA ≈∞∆–µÂ «… ø¨∞·
+##Pmod Header JA ƒπ¬∞ƒÜƒêƒæƒ∫ √á√â ≈º≈π¬∞√°
 set_property -dict { PACKAGE_PIN C17   IOSTANDARD LVCMOS33 } [get_ports { key_row[3] }]; 
 set_property -dict { PACKAGE_PIN D18   IOSTANDARD LVCMOS33 } [get_ports { key_row[2] }]; 
 set_property -dict { PACKAGE_PIN E18   IOSTANDARD LVCMOS33 } [get_ports { key_row[1] }]; 

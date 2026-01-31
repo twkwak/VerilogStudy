@@ -10,7 +10,7 @@ module acc(ah_reset,clr,clk,ah_in,ah_inen,aludata, carry_out,hs,ls,
   output [3:0] al_out;
   wire [3:0] a;
   assign a=(ah_inen)?ah_in : aludata; //MUX
-  //shregi(carry_msb,carry_lsb,c(¼±ÅÃ´ÜÀÚ),clr,clk,data_in, data_out)
+  //shregi(carry_msb,carry_lsb,c(Â¼Â±Ã…ÃƒÂ´ÃœÃ€Ãš),clr,clk,data_in, data_out)
   shreg shreg_ah(.carry_msb(carry_out),.carry_lsb(al_out[3]),.c(hs),
             .clr((clr|ah_reset)),.clk(clk),.data_in(a),.data_out(ah_out));
   shreg shreg_al(ah_out[0],carry_out,ls,clr,clk,ah_out,al_out);

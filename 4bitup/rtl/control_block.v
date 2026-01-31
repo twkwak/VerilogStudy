@@ -4,15 +4,15 @@ module control_block(z_f,s_f,clk,clr,opcode,pc_oen,mar_inen,rom_en,mdr_inen,
     dreg_inen, dreg_oen,rreg_inen,rreg_oen,breg_inen,inreg_oen,keych_oen,
     outreg_inen, keyout_inen, load_pc,acc_oen,ah_inen,ah_reset,adds,subs,    
     ands,divs,muls,hs,ls);
-    input [7:0] opcode; //¸í·É¾î ÀÔ·Â
-    input z_f,s_f,clk,clr;  //ALUÀÇ °è»ê °á°ú·Î ³ª¿À´Â flag¿Í clk, clr
+    input [7:0] opcode; //ëª…ë ¹ì–´ ì…ë ¥
+    input z_f,s_f,clk,clr;  //ALUì˜ ê³„ì‚° ê²°ê³¼ë¡œ ë‚˜ì˜¤ëŠ” flagì™€ clk, clr
     output pc_oen,mar_inen,rom_en,mdr_inen,pc_inc,mdr_oen,ir_inen,tmp_inen,
              tmp_oen,creg_inen,creg_oen,dreg_inen,dreg_oen,rreg_inen, rreg_oen, 
              breg_inen,inreg_oen,keych_oen,outreg_inen,keyout_inen,
              load_pc,acc_oen,ah_inen,ah_reset,adds,subs,ands,divs,muls;
-     output [1:0] hs,ls; //outputÀÇ ÀüÃ¼ 33°³ ½ÅÈ£´Â °¢Á¾ ·¹Áö½ºÅÍµéÀÇ ÃÖÁ¾ ÀÔÃâ·Â Á¦¾î½ÅÈ£
-     wire [11:0] t;        //ringcnt.v¿Í ctrl_signal.v ºí·Ï ¿¬°áÀ» À§ÇÑ ¼±
-//decoder.vÀÇ Ãâ·Â°ú ctrl_signal.v ÀÔ·ÂÀÇ ¿¬°á¼±
+     output [1:0] hs,ls; //outputì˜ ì „ì²´ 33ê°œ ì‹ í˜¸ëŠ” ê°ì¢… ë ˆì§€ìŠ¤í„°ë“¤ì˜ ìµœì¢… ì…ì¶œë ¥ ì œì–´ì‹ í˜¸
+     wire [11:0] t;        //ringcnt.vì™€ ctrl_signal.v ë¸”ë¡ ì—°ê²°ì„ ìœ„í•œ ì„ 
+//decoder.vì˜ ì¶œë ¥ê³¼ ctrl_signal.v ì…ë ¥ì˜ ì—°ê²°ì„ 
 wire nop,outb,outs,add_s,sub_s,and_s, div_s,mul_s,shl,clr_s,psah,shr,load, jz,jmp,jge, mov_ah_cr, mov_ah_dr, mov_tmp_ah,mov_tmp_br,mov_tmp_cr, mov_tmp_dr,mov_tmp_rr,
      mov_cr_ah,mov_cr_br,mov_dr_ah, 
      mov_dr_tmp,mov_dr_br,mov_rr_ah,

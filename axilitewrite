@@ -1,0 +1,98 @@
+module axil_write_only_reg0 #(
+    parameter int ADDR_WIDTH = 4
+) (
+    input  logic                  ACLK,
+    input  logic                  ARESETn,
+
+    // Write Address Channel (AW)
+    input  logic [ADDR_WIDTH-1:0] AWADDR,       //write address 
+    input  logic                  AWVALID,      //write address valid
+    output logic                  AWREADY,      //ready=>output slave가 master에게 보내는 신호이므로
+
+    // Write Data Channel (W)
+    input  logic [31:0]           WDATA,        //write data 
+    input  logic [3:0]            WSTRB,        //write strobe
+    input  logic                  WVALID,       
+    output logic                  WREADY,
+
+    // Write Response Channel (B)   
+    output logic [1:0]            BRESP,        //Write Response
+    output logic                  BVALID,
+    input  logic                  BREADY,
+
+    // User register
+    output logic [31:0]           reg0
+);
+
+    // 1-depth latches
+    logic [ADDR_WIDTH-1:0] awaddr_lat;
+    logic [31:0]           wdata_lat;
+    logic [3:0]            wstrb_lat;
+
+    // pending flags
+    logic aw_pending;   // address stored, waiting for data
+    logic w_pending;    // data stored, waiting for address
+    logic b_pending;    // response pending (BVALID asserted)
+
+    // handshake detections
+    wire aw_hs = AWVALID && AWREADY;            //non-reg handshake 
+    wire w_hs  = WVALID  && WREADY;
+    wire b_hs  = BVALID  && BREADY;
+
+    // READY/VALID policy (simple + safe)
+    always_comb begin
+        AWREADY = (!aw_pending) && (!b_pending); // accept 1 address max per transaction pending= 보류 중 
+        WREADY  = (!w_pending)  && (!b_pending); // accept 1 data max per transaction
+        BVALID  = b_pending;                     // hold until BREADY
+        BRESP   = 2'b00;                         // OKAY only (step2 simplification)
+    end                                         // BRESP 00 = okay, 10 = error
+
+    always_ff @(posedge ACLK) begin
+        if (!ARESETn) begin
+            awaddr_lat <= '0;
+            wdata_lat  <= '0;
+            wstrb_lat  <= '0;
+
+            aw_pending <= 1'b0;
+            w_pending  <= 1'b0;
+            b_pending  <= 1'b0;
+
+            reg0       <= 32'h0;
+        end else begin
+            // 1) Latch AW (order independent)
+            if (aw_hs) begin                // address write =1 
+                awaddr_lat <= AWADDR;       // adress => latch
+                aw_pending <= 1'b1;        
+            end
+
+            // 2) Latch W (order independent)
+            if (w_hs) begin
+                wdata_lat <= WDATA;
+                wstrb_lat <= WSTRB;
+                w_pending <= 1'b1;
+            end
+
+            // 3) When both are latched, do the write once and raise BVALID
+            if (!b_pending && aw_pending && w_pending) begin        //aw_pending =1 && w_pending =1 && b_pending =0
+                // Step2: only valid address is 0x0 (reg0)
+                if (awaddr_lat == '0) begin                             //주소가 0이면 awaddr_lat = 4'b0000 = 0x0일떄만 쓰기 허용
+                    if (wstrb_lat[0]) reg0[7:0]   <= wdata_lat[7:0];        //wsrtb 값이 1이면 latch 값 갱신
+                    if (wstrb_lat[1]) reg0[15:8]  <= wdata_lat[15:8];
+                    if (wstrb_lat[2]) reg0[23:16] <= wdata_lat[23:16];
+                    if (wstrb_lat[3]) reg0[31:24] <= wdata_lat[31:24];
+                end
+
+                // consume the buffered AW/W and start response phase
+                b_pending  <= 1'b1;
+                aw_pending <= 1'b0;
+                w_pending  <= 1'b0;
+            end
+
+            // 4) Finish response when master accepts it
+            if (b_hs) begin
+                b_pending <= 1'b0;
+            end
+        end
+    end
+
+endmodule

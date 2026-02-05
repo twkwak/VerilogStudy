@@ -1,0 +1,78 @@
+AXI-LITE Write channel
+
+AXI-Lite Write
+-주소 주는 handshake(AW)
+-데이터 주는 handshake(W)
+-다 썼다고 응답하는 handshake(B)
+
+1) AW채널 (Write Address)
+AWVALID: 마스터가 주소 유효 선언
+AWREADY 슬레이브가 주소 받을 준비 완료
+AWADDR: 쓰고싶은 주소
+handshake 성립 조건: AWVALID && AWREADY
+
+2) W채널 (Write)
+WVALID : 데이터 유효
+WREADY: 데이터 받을 준비
+WDATA: 쓰는 데이터( 32bit)
+WSTRB: 바이트 단위 Write enable
+handshake: WVALID && WREADY
+
+3) B채널 (Write Response)
+BVALID: 쓰기 끝, 응답 줄게
+BREADY: 응답 받을게
+BRESP: 응답 코드 (OKAY= 2'b00
+handshake: BVALID && BREADY
+
+AW와 W는 순서 x 둘중 하나가 먼저올수도.
+주소를 한번 저장(latch)해주고
+데이터를 한번 저장(latch) 해주고
+둘다 모였을때만 실제 write 수행
+
+AW 한번 받았으면 다음 트랜잭션 시작 전까진 AWREADY 0으로 내려
+추가 주소 진입 막음
+W도 마찬가지
+
+aw_pending: 주소 하나 저장되어 있음
+w_pending: 데이터 하나 저장돼 있음
+b_pending: 응답 BVALID 내보내는 중
+
+awaddr_latched
+wdata_latched
+wstrb_latched
+
+1. AW handshake 되면 awaddr_latched 저장, aw_pending=1
+2. W handshake 되면 wdata_wstrb 저장, w_pending =1
+3. aw_pending && w_pending가 되는 순간:
+	-reg0에 write 수행
+	-b_pending=1(BVALID 수행)
+	-aw_pending=0, w_pending= 0
+4. b_pending 상태에서 BREADY 오면
+	B handshake
+	b_pending=0완료
+
+WDATA= 새로 쓰고 싶은 32비트, 4바이트
+WSTRB= 지울 바이트 표시
+ex) WSTRB= 4'b0101
+	=> 0,2번 바이트만 갱신, 나머지는 기존 값 유지
+
+if WSTRB[i] ==1:
+	reg_byte[i] = WDATA_byte[i]
+else:
+	reg_byte[i] 유지
+
+=> reg를 32비트 하나로 생각이 아닌 4개의 바이트로 나눠서 생각
+
+
+
+
+
+
+
+
+
+
+
+
+
+

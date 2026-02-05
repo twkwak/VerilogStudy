@@ -1,88 +1,136 @@
-#  Ready / Valid Handshake 기반 1-Depth FIFO
+# Ready / Valid Handshake 기반 1-Depth FIFO
 
-##  프로젝트 개요
-본 프로젝트는 AXI / AXI-Lite 인터페이스의 핵심 개념인 ready/valid handshake를 이해하기 위한 미니 프로젝트이다.  
-신호 개수나 복잡한 버스 구조가 아닌, 데이터 전송의 본질(backpressure, 데이터 안정성, valid 유지 규칙)에 집중하였다.
-
-AXI 진입 전 반드시 이해해야 하는 개념을 1-depth FIFO(single-entry buffer) 형태로 구현하고,  
-랜덤 backpressure 환경에서 self-checking 테스트벤치로 검증하였다.
+한 줄 요약  
+Ready / Valid Handshake의 본질을 이해하기 위해 1-depth FIFO를 설계하고,  
+랜덤 backpressure 환경에서 self-checking 테스트벤치로 검증한 미니 프로젝트
 
 ---
 
-##  프로젝트 목표
-- ready / valid handshake의 본질적인 동작 원리 이해
-- backpressure 발생 시 데이터 안정성 보장
-- valid 신호의 유지 규칙 체득
-- AXI 채널을 FIFO 관점에서 해석하는 사고 방식 습득
+## 1. 프로젝트 개요
+
+- 프로젝트 목적:  
+  AXI/AXI-Lite 인터페이스의 핵심 개념인 ready/valid handshake를 정확히 이해하고,  
+  backpressure 상황에서 데이터 안정성과 valid 유지 규칙을 체득하기 위함
+
+- 설계 대상:  
+  Ready / Valid Handshake 기반 1-depth FIFO (Single Entry Buffer)
+
+- 사용 언어 / 툴:  
+  SystemVerilog, Vivado
+
+- 설계 수준:  
+  RTL
+
+본 프로젝트에서는 AXI 진입 전 필수 개념인 ready/valid 프로토콜을  
+가장 단순한 1-depth FIFO 구조로 구현하여,  
+데이터 전송의 본질을 명확히 이해하는 것을 목표로 하였다.
 
 ---
 
-##  설계 사양
+## 2. 설계 배경 및 목표
 
-### 인터페이스
-입력/출력 신호 구성은 다음과 같다.
+- 프로젝트를 진행하게 된 배경  
+  AXI 프로토콜 학습 과정에서 신호의 개수보다  
+  ready/valid handshake 자체를 이해하는 것이 더 중요하다고 판단하여 시작함
 
-    in_valid   : 입력 데이터 유효 신호
-    in_ready   : FIFO 입력 가능 신호
-    in_data    : 입력 데이터 (32-bit)
+- 학습 또는 구현하고자 한 핵심 개념  
+  - ready / valid handshake의 의미  
+  - backpressure 발생 시 동작  
+  - valid 유지 규칙  
+  - 데이터 안정성 보장
 
-    out_valid  : 출력 데이터 유효 신호
-    out_ready  : 소비자 준비 신호
-    out_data   : 출력 데이터 (32-bit)
-
-### 내부 상태
-- full  
-  FIFO에 유효한 데이터가 존재하는지 나타내는 플래그
-- storage  
-  1개의 데이터(word)를 저장하는 레지스터
-
-### Handshake 이벤트 정의
-- push = in_valid & in_ready  
-- pop  = out_valid & out_ready  
-
-push / pop 각각이 정확히 데이터 1개의 이동을 의미한다.
+- 중점적으로 다룬 설계 요소  
+  - push / pop 이벤트 정의  
+  - stall 상황에서의 데이터 고정  
+  - handshake 기반 데이터 이동 모델링
 
 ---
 
-##  동작 원리
+## 3. 전체 구조
 
-### Ready / Valid 규칙
-- in_ready = ~full  
-  → FIFO가 비어 있을 때만 입력 허용
-- out_valid = full  
-  → FIFO에 데이터가 있을 때만 출력 유효
+본 설계는 단일 데이터 엔트리를 가지는 FIFO 구조로 구성되어 있다.
 
-### 핵심 설계 포인트
-- out_valid = 1 이고 out_ready = 0 인 동안  
-  → out_data는 절대 변경되면 안 됨
-- out_valid는 데이터가 소비(pop)될 때까지  
-  → 반드시 유지되어야 함
+- 주요 구성 블록  
+  - storage : 데이터 1개를 저장하는 레지스터  
+  - full    : FIFO에 유효 데이터 존재 여부를 나타내는 상태 플래그
 
-이 규칙들은 AXI 프로토콜의 요구사항과 완전히 동일하다.
+- 데이터 흐름  
+  - in_valid & in_ready  → push 발생 (데이터 입력)  
+  - out_valid & out_ready → pop 발생 (데이터 출력)
 
----
-
-##  검증(Testbench) 전략
-
-### Testbench 특징
-- Self-checking 구조
-- 랜덤 backpressure (out_ready 랜덤 제어)
-- 랜덤 입력 트래픽 (in_valid 랜덤 생성)
-- Reference model 기반 자동 비교
-- Assertion을 이용한 프로토콜 위반 검출
-
-### 검증 항목
-- stall 상황에서 데이터 안정성
-- stall 상황에서 valid 유지 규칙
-
-위반 발생 시 즉시 시뮬레이션을 종료하도록 구성하였다.
+- 제어 흐름  
+  - full 상태에 따라 in_ready / out_valid 결정  
+  - push / pop 이벤트에 따라 상태 갱신
 
 ---
 
-##  프로젝트를 통해 얻은 핵심 인사이트
-- ready/valid는 신호 묶음이 아니라 FIFO의 push/pop 이벤트
-- 데이터의 의미는 값이 아니라 valid 신호가 결정
-- backpressure 처리는 옵션이 아니라 필수
-- AXI 채널은 각각 독립적인 FIFO로 해석 가능
+## 4. 파일 구조
+
+파일명 - 역할 설명
+
+rv_fifo_1deep.sv  
+- Ready / Valid Handshake 기반 1-depth FIFO RTL 설계
+
+tb_rv_fifo_1deep.sv  
+- 랜덤 backpressure 환경에서 검증하는 self-checking 테스트벤치
+
+---
+
+## 5. 주요 설계 포인트
+
+### 5.1 핵심 모듈
+
+- rv_fifo_1deep  
+  - Ready / Valid Handshake 규칙을 만족하는 단일 엔트리 FIFO  
+  - full 플래그를 기준으로 입력/출력 handshake 제어  
+  - push / pop 이벤트를 통해 데이터 이동을 명확히 모델링
+
+### 5.2 설계 시 고려사항
+
+- 제어 신호 설계  
+  - in_ready = ~full  
+  - out_valid = full  
+
+- 데이터 경로 구성  
+  - storage 레지스터는 full=1일 때만 의미를 가짐  
+  - stall 상황에서 데이터가 변경되지 않도록 설계
+
+- 타이밍 및 동기화  
+  - push / pop은 조합논리로 정의  
+  - 상태(full, storage)는 always_ff 기반으로 동기화
+
+---
+
+## 6. 검증 방법
+
+- 시뮬레이션 환경  
+  - Vivado Behavioral Simulation
+
+- 테스트 방식  
+  - 랜덤 in_valid 생성  
+  - 랜덤 out_ready 생성(backpressure 유도)  
+  - Reference model을 이용한 자동 비교
+
+- 검증 포인트  
+  - stall(out_valid=1, out_ready=0) 시 데이터 안정성  
+  - valid 유지 규칙 위반 여부  
+  - push / pop 이벤트 정합성
+
+---
+
+## 7. 결과 및 의의
+
+- 구현 결과 요약  
+  - 랜덤 backpressure 환경에서 모든 테스트 PASS  
+  - 데이터 안정성 및 valid 유지 규칙 검증 완료
+
+- 프로젝트를 통해 얻은 점  
+  - ready/valid를 FIFO의 push/pop 이벤트로 해석하는 사고 습득  
+  - AXI 채널을 독립적인 FIFO로 바라보는 관점 확립
+
+- 설계적으로 성장한 부분  
+  - 프로토콜 기반 설계 사고  
+  - self-checking 테스트벤치 작성 경험  
+  - assertion을 이용한 자동 검증 경험
 
 ---

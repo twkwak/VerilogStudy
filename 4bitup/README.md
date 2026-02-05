@@ -1,6 +1,6 @@
 # 4-bit Microprocessor Design (Verilog)
 
-본 프로젝트는 컴퓨터 구조 및 CPU 설계 강의 자료를 기반으로  
+본 프로젝트는 컴퓨터 구조 및 CPU 설계 강의를 기반으로  
 Verilog HDL을 사용하여 4비트 마이크로프로세서를 직접 설계 및 구현한 개인 프로젝트입니다.
 
 단순한 모듈 구현이 아닌, 명령어의 Fetch–Decode–Execute 흐름과  
@@ -124,16 +124,3 @@ top_processor.v    - Top Module
 
 ---
 
-## 향후 개선 방향
-
-- Multi-cycle 구조 확장
-- Instruction Set 확장
-- Pipeline 구조 도입
-- Testbench 고도화
-
----
-
-## 참고
-
-본 프로젝트는 강의 자료를 기반으로 학습 목적으로 진행되었으며,  
-모든 Verilog 코드는 직접 작성 및 구조 설계를 수행했습니다.

@@ -36,31 +36,32 @@ Verilog HDL을 사용하여 4비트 마이크로프로세서를 직접 설계 �
 
 ## 파일 구조
 
-.
-├── acc.v # Accumulator
-├── alu.v # Arithmetic Logic Unit
-├── aluNacc.v # ALU + ACC 결합 모듈
-├── control_block.v # 전체 제어 로직
-├── control_signal.v # 제어 신호 생성
-├── decoder.v # Instruction Decoder
-├── pc.v # Program Counter
-├── reg4.v # 4-bit Register
-├── reg8.v # 8-bit Register
-├── shreg.v # Shift Register
-├── ringCounter.v # Ring Counter
-│
-├── fa.v # Full Adder
-├── ha.v # Half Adder
-├── mx4to1.v # 4:1 Multiplexer
-├── hex2dec.v # Hex to Decimal 변환
-│
-├── rom.coe # Instruction Memory 초기화 파일
-│
-├── seg7x8.v # 7-Segment Display 제어
-│
-├── processor.v # Processor Core
-├── prog_module.v # Program 관련 모듈
-└── top_processor.v # Top Module
+```text
+acc.v              - Accumulator
+alu.v              - Arithmetic Logic Unit
+aluNacc.v          - ALU + ACC 결합 모듈
+control_block.v    - 전체 제어 로직
+control_signal.v   - 제어 신호 생성
+decoder.v          - Instruction Decoder
+pc.v               - Program Counter
+reg4.v             - 4-bit Register
+reg8.v             - 8-bit Register
+shreg.v            - Shift Register
+ringCounter.v      - Ring Counter
+
+fa.v               - Full Adder
+ha.v               - Half Adder
+mx4to1.v           - 4:1 Multiplexer
+hex2dec.v          - Hex to Decimal 변환
+
+rom.coe            - Instruction Memory 초기화 파일
+
+seg7x8.v           - 7-Segment Display 제어
+
+processor.v        - Processor Core
+prog_module.v      - Program 관련 모듈
+top_processor.v    - Top Module
+```
 
 ---
 
